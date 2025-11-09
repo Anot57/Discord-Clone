@@ -21,42 +21,18 @@ export async function GET(req: Request) {
 
     let messages: DirectMessage[] = [];
 
-    if (cursor) {
-      messages = await db.directMessage.findMany({
-        take: MESSAGES_BATCH,
-        skip: 1,
-        cursor: {
-          id: cursor
-        },
-        where: {
-          conversationId
-        },
-        include: {
-          member: {
-            include: {
-              profile: true
-            }
-          }
-        },
-        orderBy: { createdAt: "desc" }
-      });
-    } else {
-      messages = await db.directMessage.findMany({
-        take: MESSAGES_BATCH,
-        where: { conversationId },
-        include: {
-          member: {
-            include: {
-              profile: true
-            }
-          }
-        },
-        orderBy: { createdAt: "desc" }
-      });
-    }
+    const queryOptions = {
+      take: MESSAGES_BATCH,
+      skip: cursor ? 1 : 0,
+      cursor: cursor ? { id: cursor } : undefined,
+      where: { conversationId },
+      include: { member: true }, // ✅ member is already Profile
+      orderBy: { createdAt: "desc" as const }
+    };
+
+    messages = await db.directMessage.findMany(queryOptions);
 
     let nextCursor = null;
-
     if (messages.length === MESSAGES_BATCH) {
       nextCursor = messages[MESSAGES_BATCH - 1].id;
     }
