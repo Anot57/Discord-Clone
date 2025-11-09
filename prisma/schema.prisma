@@ -8,36 +8,36 @@ datasource db {
 }
 
 model Profile {
-  id        String     @id @default(auto()) @map("_id") @db.ObjectId
-  userId    String     @unique
-  name      String
-  imageUrl  String
-  email     String     @unique
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  userId   String @unique
+  name     String
+  imageUrl String
+  email    String @unique
 
-  servers   Server[]
-  members   Member[]
-  channels  Channel[]
-  messages  Message[]
-  conversationsOne Conversation[] @relation("memberOne")
-  conversationsTwo Conversation[] @relation("memberTwo")
+  servers          Server[]
+  members          Member[]
+  channels         Channel[]
+  conversationsOne Conversation[]  @relation("memberOne")
+  conversationsTwo Conversation[]  @relation("memberTwo")
   directMessages   DirectMessage[]
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Server {
-  id          String    @id @default(auto()) @map("_id") @db.ObjectId
-  name        String
-  imageUrl    String
-  inviteCode  String    @unique
+  id         String @id @default(auto()) @map("_id") @db.ObjectId
+  name       String
+  imageUrl   String
+  inviteCode String @unique
 
-  profileId   String    @db.ObjectId
-  profile     Profile   @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  profileId String  @db.ObjectId
+  profile   Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
 
-  members     Member[]
-  channels    Channel[]
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  members   Member[]
+  channels  Channel[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 
   @@index([profileId])
 }
@@ -49,19 +49,19 @@ enum MemberRole {
 }
 
 model Member {
-  id         String     @id @default(auto()) @map("_id") @db.ObjectId
-  role       MemberRole @default(GUEST)
+  id   String     @id @default(auto()) @map("_id") @db.ObjectId
+  role MemberRole @default(GUEST)
 
-  profileId  String     @db.ObjectId
-  profile    Profile    @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  profileId String  @db.ObjectId
+  profile   Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
 
-  serverId   String     @db.ObjectId
-  server     Server     @relation(fields: [serverId], references: [id], onDelete: Cascade)
+  serverId String @db.ObjectId
+  server   Server @relation(fields: [serverId], references: [id], onDelete: Cascade)
 
-  messages   Message[]
+  messages Message[]
 
-  createdAt  DateTime   @default(now())
-  updatedAt  DateTime   @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([profileId])
   @@index([serverId])
@@ -74,35 +74,35 @@ enum ChannelType {
 }
 
 model Channel {
-  id         String       @id @default(auto()) @map("_id") @db.ObjectId
-  name       String
-  type       ChannelType  @default(TEXT)
+  id   String      @id @default(auto()) @map("_id") @db.ObjectId
+  name String
+  type ChannelType @default(TEXT)
 
-  profileId  String       @db.ObjectId
-  profile    Profile      @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  profileId String  @db.ObjectId
+  profile   Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
 
-  serverId   String       @db.ObjectId
-  server     Server       @relation(fields: [serverId], references: [id], onDelete: Cascade)
+  serverId String @db.ObjectId
+  server   Server @relation(fields: [serverId], references: [id], onDelete: Cascade)
 
-  messages   Message[]
+  messages Message[]
 
-  createdAt  DateTime     @default(now())
-  updatedAt  DateTime     @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([profileId])
   @@index([serverId])
 }
 
 model Message {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  content   String?
-  fileUrl   String?
+  id      String  @id @default(auto()) @map("_id") @db.ObjectId
+  content String?
+  fileUrl String?
 
-  memberId  String   @db.ObjectId
-  member    Member   @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  memberId String @db.ObjectId
+  member   Member @relation(fields: [memberId], references: [id], onDelete: Cascade)
 
-  channelId String   @db.ObjectId
-  channel   Channel  @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  channelId String  @db.ObjectId
+  channel   Channel @relation(fields: [channelId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -112,36 +112,36 @@ model Message {
 }
 
 model Conversation {
-  id           String         @id @default(auto()) @map("_id") @db.ObjectId
+  id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  memberOneId  String         @db.ObjectId
-  memberOne    Profile        @relation("memberOne", fields: [memberOneId], references: [id], onDelete: Cascade)
+  memberOneId String  @db.ObjectId
+  memberOne   Profile @relation("memberOne", fields: [memberOneId], references: [id], onDelete: Cascade)
 
-  memberTwoId  String         @db.ObjectId
-  memberTwo    Profile        @relation("memberTwo", fields: [memberTwoId], references: [id], onDelete: Cascade)
+  memberTwoId String  @db.ObjectId
+  memberTwo   Profile @relation("memberTwo", fields: [memberTwoId], references: [id], onDelete: Cascade)
 
   directMessages DirectMessage[]
 
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([memberOneId])
   @@index([memberTwoId])
 }
 
 model DirectMessage {
-  id              String        @id @default(auto()) @map("_id") @db.ObjectId
-  content         String?
-  fileUrl         String?
+  id      String  @id @default(auto()) @map("_id") @db.ObjectId
+  content String?
+  fileUrl String?
 
-  conversationId  String        @db.ObjectId
-  conversation    Conversation  @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  conversationId String       @db.ObjectId
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
 
-  memberId        String        @db.ObjectId
-  member          Profile       @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  memberId String  @db.ObjectId
+  member   Profile @relation(fields: [memberId], references: [id], onDelete: Cascade)
 
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([conversationId])
   @@index([memberId])
