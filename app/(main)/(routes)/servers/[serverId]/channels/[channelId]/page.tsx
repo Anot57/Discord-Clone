@@ -1,7 +1,6 @@
 import React from "react";
 import { redirectToSignIn } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
-import { ChannelType } from "@prisma/client";
 
 import { currentProfile } from "@/lib/current-profile";
 import { db } from "@/lib/db";
@@ -9,6 +8,13 @@ import { ChatHeader } from "@/components/chat/chat-header";
 import { ChatInput } from "@/components/chat/chat-input";
 import { ChatMessages } from "@/components/chat/chat-messages";
 import { MediaRoom } from "@/components/media-room";
+
+// Define the enum here
+enum ChannelType {
+  TEXT = "TEXT",
+  AUDIO = "AUDIO",
+  VIDEO = "VIDEO"
+}
 
 interface ChannelIdPageProps {
   params: {

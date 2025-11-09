@@ -17,8 +17,8 @@ model Profile {
   servers          Server[]
   members          Member[]
   channels         Channel[]
-  conversationsOne Conversation[]  @relation("memberOne")
-  conversationsTwo Conversation[]  @relation("memberTwo")
+  conversationsOne Conversation[] @relation("memberOne")
+  conversationsTwo Conversation[] @relation("memberTwo")
   directMessages   DirectMessage[]
 
   createdAt DateTime @default(now())
@@ -49,16 +49,16 @@ enum MemberRole {
 }
 
 model Member {
-  id   String     @id @default(auto()) @map("_id") @db.ObjectId
+  id   String @id @default(auto()) @map("_id") @db.ObjectId
   role MemberRole @default(GUEST)
 
-  profileId String  @db.ObjectId
+  profileId String @db.ObjectId
   profile   Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
 
   serverId String @db.ObjectId
   server   Server @relation(fields: [serverId], references: [id], onDelete: Cascade)
 
-  messages Message[]
+  messages       Message[]
   directMessages DirectMessage[]
 
   createdAt DateTime @default(now())
@@ -75,11 +75,11 @@ enum ChannelType {
 }
 
 model Channel {
-  id   String      @id @default(auto()) @map("_id") @db.ObjectId
+  id   String @id @default(auto()) @map("_id") @db.ObjectId
   name String
   type ChannelType @default(TEXT)
 
-  profileId String  @db.ObjectId
+  profileId String @db.ObjectId
   profile   Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
 
   serverId String @db.ObjectId
@@ -95,14 +95,14 @@ model Channel {
 }
 
 model Message {
-  id      String  @id @default(auto()) @map("_id") @db.ObjectId
+  id      String @id @default(auto()) @map("_id") @db.ObjectId
   content String?
   fileUrl String?
 
   memberId String @db.ObjectId
   member   Member @relation(fields: [memberId], references: [id], onDelete: Cascade)
 
-  channelId String  @db.ObjectId
+  channelId String @db.ObjectId
   channel   Channel @relation(fields: [channelId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
@@ -115,10 +115,10 @@ model Message {
 model Conversation {
   id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  memberOneId String  @db.ObjectId
+  memberOneId String @db.ObjectId
   memberOne   Profile @relation("memberOne", fields: [memberOneId], references: [id], onDelete: Cascade)
 
-  memberTwoId String  @db.ObjectId
+  memberTwoId String @db.ObjectId
   memberTwo   Profile @relation("memberTwo", fields: [memberTwoId], references: [id], onDelete: Cascade)
 
   directMessages DirectMessage[]
@@ -131,7 +131,7 @@ model Conversation {
 }
 
 model DirectMessage {
-  id      String  @id @default(auto()) @map("_id") @db.ObjectId
+  id      String @id @default(auto()) @map("_id") @db.ObjectId
   content String?
   fileUrl String?
 
@@ -139,7 +139,7 @@ model DirectMessage {
   conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
 
   memberId String @db.ObjectId
-  member   Member @relation(fields: [memberId], references: [id], onDelete: Cascade) // updated relation
+  member   Member @relation(fields: [memberId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
