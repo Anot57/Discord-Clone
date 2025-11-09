@@ -47,16 +47,16 @@ export default async function MemberIdPage({
 
   if (!conversation) return redirect(`/servers/${serverId}`);
 
-  const { memberOne, memberTwo } = conversation;
+  const { memberOne: profileOne, memberTwo: profileTwo } = conversation;
 
-  const otherMember =
-    memberOne.profileId === profile.id ? memberTwo : memberOne;
+  // ✅ Fixed: use `.id`, not `.profileId`
+  const otherMember = profileOne.id === profile.id ? profileTwo : profileOne;
 
   return (
     <div className="bg-white dark:bg-[#313338] flex flex-col h-full">
       <ChatHeader
-        imageUrl={otherMember.profile.imageUrl}
-        name={otherMember.profile.name}
+        imageUrl={otherMember.imageUrl}
+        name={otherMember.name}
         serverId={serverId}
         type="conversation"
       />
@@ -65,7 +65,7 @@ export default async function MemberIdPage({
         <>
           <ChatMessages
             member={currentMember}
-            name={otherMember.profile.name}
+            name={otherMember.name}
             chatId={conversation.id}
             type="conversation"
             apiUrl="/api/direct-messages"
@@ -77,7 +77,7 @@ export default async function MemberIdPage({
             }}
           />
           <ChatInput
-            name={otherMember.profile.name}
+            name={otherMember.name}
             type="conversation"
             apiUrl="/api/socket/direct-messages"
             query={{
