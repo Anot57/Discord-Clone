@@ -1,6 +1,5 @@
 import { NextApiRequest } from "next";
 import { MemberRole } from "@prisma/client";
-
 import { NextApiResponseServerIo } from "@/types";
 import { currentProfilePages } from "@/lib/current-profile-pages";
 import { db } from "@/lib/db";
@@ -26,13 +25,13 @@ export default async function handler(
       where: {
         id: conversationId as string,
         OR: [
-          { memberOne: { profileId: profile.id } },
-          { memberTwo: { profileId: profile.id } }
+          { memberOne: { id: profile.id } }, // ✅ use id instead of profileId
+          { memberTwo: { id: profile.id } }  // ✅ use id instead of profileId
         ]
       },
       include: {
-        memberOne: { include: { profile: true } },
-        memberTwo: { include: { profile: true } }
+        memberOne: true, // ✅ no nested include needed
+        memberTwo: true
       }
     });
 
@@ -40,7 +39,7 @@ export default async function handler(
       return res.status(404).json({ error: "Conversation not found" });
 
     const member =
-      conversation.memberOne.profileId === profile.id
+      conversation.memberOne.id === profile.id
         ? conversation.memberOne
         : conversation.memberTwo;
 
@@ -61,12 +60,12 @@ export default async function handler(
       }
     });
 
-    if (!directMessage || directMessage.deleted)
+    if (!directMessage || (directMessage as any).deleted)
       return res.status(404).json({ error: "Message not found" });
 
     const isMessageOwner = directMessage.memberId === member.id;
-    const isAdmin = member.role === MemberRole.ADMIN;
-    const isModerator = member.role === MemberRole.MODERATOR;
+    const isAdmin = directMessage.member.role === MemberRole.ADMIN;
+    const isModerator = directMessage.member.role === MemberRole.MODERATOR;
     const canModify = isMessageOwner || isAdmin || isModerator;
 
     if (!canModify) return res.status(401).json({ error: "Unauthorized" });

@@ -25,12 +25,8 @@ const findConversation = async (
         AND: [{ memberOneId }, { memberTwoId }]
       },
       include: {
-        memberOne: {
-          include: { profile: true }
-        },
-        memberTwo: {
-          include: { profile: true }
-        }
+        memberOne: true, // ✅ directly include the Profile
+        memberTwo: true  // ✅ directly include the Profile
       }
     });
   } catch (error) {
@@ -49,12 +45,8 @@ const createNewConversation = async (
         memberTwoId
       },
       include: {
-        memberOne: {
-          include: { profile: true }
-        },
-        memberTwo: {
-          include: { profile: true }
-        }
+        memberOne: true, // ✅ directly include the Profile
+        memberTwo: true  // ✅ directly include the Profile
       }
     });
   } catch (error) {

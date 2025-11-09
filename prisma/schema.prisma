@@ -8,15 +8,19 @@ datasource db {
 }
 
 model Profile {
-  id        String    @id @default(auto()) @map("_id") @db.ObjectId
-  userId    String    @unique
+  id        String     @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String     @unique
   name      String
   imageUrl  String
-  email     String    @unique
+  email     String     @unique
 
   servers   Server[]
   members   Member[]
   channels  Channel[]
+  messages  Message[]
+  conversationsOne Conversation[] @relation("memberOne")
+  conversationsTwo Conversation[] @relation("memberTwo")
+  directMessages   DirectMessage[]
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
 }
@@ -105,4 +109,40 @@ model Message {
 
   @@index([memberId])
   @@index([channelId])
+}
+
+model Conversation {
+  id           String         @id @default(auto()) @map("_id") @db.ObjectId
+
+  memberOneId  String         @db.ObjectId
+  memberOne    Profile        @relation("memberOne", fields: [memberOneId], references: [id], onDelete: Cascade)
+
+  memberTwoId  String         @db.ObjectId
+  memberTwo    Profile        @relation("memberTwo", fields: [memberTwoId], references: [id], onDelete: Cascade)
+
+  directMessages DirectMessage[]
+
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  @@index([memberOneId])
+  @@index([memberTwoId])
+}
+
+model DirectMessage {
+  id              String        @id @default(auto()) @map("_id") @db.ObjectId
+  content         String?
+  fileUrl         String?
+
+  conversationId  String        @db.ObjectId
+  conversation    Conversation  @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  memberId        String        @db.ObjectId
+  member          Profile       @relation(fields: [memberId], references: [id], onDelete: Cascade)
+
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  @@index([conversationId])
+  @@index([memberId])
 }
