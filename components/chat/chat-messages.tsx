@@ -56,11 +56,13 @@ export function ChatMessages({
       paramKey,
       paramValue
     });
+
   useChatSocket({
     queryKey,
     addKey,
     updateKey
   });
+
   useChatScroll({
     chatRef,
     bottomRef,
@@ -90,10 +92,7 @@ export function ChatMessages({
     );
 
   return (
-    <div
-      className="flex-1 flex flex-col py-4 overflow-y-auto"
-      ref={chatRef}
-    >
+    <div className="flex-1 flex flex-col py-4 overflow-y-auto" ref={chatRef}>
       {!hasNextPage && <div className="flex-1" />}
       {!hasNextPage && <ChatWelcome name={name} type={type} />}
       {hasNextPage && (
@@ -119,13 +118,10 @@ export function ChatMessages({
                 currentMember={member}
                 member={message.member}
                 id={message.id}
-                content={message.content}
+                content={message.content ?? ""} // ✅ Fix for string | null
                 fileUrl={message.fileUrl}
                 deleted={message.deleted}
-                timestamp={format(
-                  new Date(message.createdAt),
-                  DATE_FORMAT
-                )}
+                timestamp={format(new Date(message.createdAt), DATE_FORMAT)}
                 isUpdated={message.updatedAt !== message.createdAt}
                 socketQuery={socketQuery}
                 socketUrl={socketUrl}

@@ -36,8 +36,8 @@ model Server {
 
   members   Member[]
   channels  Channel[]
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([profileId])
 }
@@ -59,6 +59,7 @@ model Member {
   server   Server @relation(fields: [serverId], references: [id], onDelete: Cascade)
 
   messages Message[]
+  directMessages DirectMessage[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -134,11 +135,11 @@ model DirectMessage {
   content String?
   fileUrl String?
 
-  conversationId String       @db.ObjectId
+  conversationId String @db.ObjectId
   conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
 
-  memberId String  @db.ObjectId
-  member   Profile @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  memberId String @db.ObjectId
+  member   Member @relation(fields: [memberId], references: [id], onDelete: Cascade) // updated relation
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
